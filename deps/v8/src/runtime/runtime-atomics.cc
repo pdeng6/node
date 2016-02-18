@@ -530,24 +530,25 @@ RUNTIME_FUNCTION(Runtime_AtomicsCompareExchange) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
 
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoCompareExchange<ctype>(isolate, buffer, index, oldobj, newobj);
+    return DoCompareExchange<ctype>(isolate, source, index, oldobj, newobj);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalFloat32Array:
-      return DoCompareExchange<float>(isolate, buffer, index, oldobj, newobj);
+      return DoCompareExchange<float>(isolate, source, index, oldobj, newobj);
 
     case kExternalFloat64Array:
-      return DoCompareExchange<double>(isolate, buffer, index, oldobj, newobj);
+      return DoCompareExchange<double>(isolate, source, index, oldobj, newobj);
 
     case kExternalUint8ClampedArray:
-      return DoCompareExchangeUint8Clamped(isolate, buffer, index, oldobj,
+      return DoCompareExchangeUint8Clamped(isolate, source, index, oldobj,
                                            newobj);
 
     default:
@@ -567,12 +568,13 @@ RUNTIME_FUNCTION(Runtime_AtomicsLoad) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
 
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoLoad<ctype>(isolate, buffer, index);
+    return DoLoad<ctype>(isolate, source, index);
 
     TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
@@ -595,24 +597,24 @@ RUNTIME_FUNCTION(Runtime_AtomicsStore) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoStore<ctype>(isolate, buffer, index, value);
+    return DoStore<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalFloat32Array:
-      return DoStore<float>(isolate, buffer, index, value);
+      return DoStore<float>(isolate, source, index, value);
 
     case kExternalFloat64Array:
-      return DoStore<double>(isolate, buffer, index, value);
+      return DoStore<double>(isolate, source, index, value);
 
     case kExternalUint8ClampedArray:
-      return DoStoreUint8Clamped(isolate, buffer, index, value);
+      return DoStoreUint8Clamped(isolate, source, index, value);
 
     default:
       break;
@@ -632,18 +634,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsAdd) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoAdd<ctype>(isolate, buffer, index, value);
+    return DoAdd<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoAddUint8Clamped(isolate, buffer, index, value);
+      return DoAddUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:
@@ -665,18 +667,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsSub) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoSub<ctype>(isolate, buffer, index, value);
+    return DoSub<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoSubUint8Clamped(isolate, buffer, index, value);
+      return DoSubUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:
@@ -698,18 +700,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsAnd) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoAnd<ctype>(isolate, buffer, index, value);
+    return DoAnd<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoAndUint8Clamped(isolate, buffer, index, value);
+      return DoAndUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:
@@ -731,18 +733,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsOr) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoOr<ctype>(isolate, buffer, index, value);
+    return DoOr<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoOrUint8Clamped(isolate, buffer, index, value);
+      return DoOrUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:
@@ -764,18 +766,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsXor) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoXor<ctype>(isolate, buffer, index, value);
+    return DoXor<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoXorUint8Clamped(isolate, buffer, index, value);
+      return DoXorUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:
@@ -797,18 +799,18 @@ RUNTIME_FUNCTION(Runtime_AtomicsExchange) {
   RUNTIME_ASSERT(sta->GetBuffer()->is_shared());
   RUNTIME_ASSERT(index < NumberToSize(isolate, sta->length()));
 
-  void* buffer = sta->GetBuffer()->backing_store();
-
+  uint8_t* source = static_cast<uint8_t*>(sta->GetBuffer()->backing_store()) +
+                    NumberToSize(isolate, sta->byte_offset());
   switch (sta->type()) {
 #define TYPED_ARRAY_CASE(Type, typeName, TYPE, ctype, size) \
   case kExternal##Type##Array:                              \
-    return DoExchange<ctype>(isolate, buffer, index, value);
+    return DoExchange<ctype>(isolate, source, index, value);
 
     INTEGER_TYPED_ARRAYS(TYPED_ARRAY_CASE)
 #undef TYPED_ARRAY_CASE
 
     case kExternalUint8ClampedArray:
-      return DoExchangeUint8Clamped(isolate, buffer, index, value);
+      return DoExchangeUint8Clamped(isolate, source, index, value);
 
     case kExternalFloat32Array:
     case kExternalFloat64Array:

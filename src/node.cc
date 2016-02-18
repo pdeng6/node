@@ -5,6 +5,7 @@
 #include "node_http_parser.h"
 #include "node_javascript.h"
 #include "node_version.h"
+#include "node_worker.h"
 #include "node_internals.h"
 
 #if defined HAVE_PERFCTR
@@ -162,8 +163,8 @@ static bool debugger_running;
 static uv_async_t dispatch_debug_messages_async;
 
 static node::atomic<Isolate*> node_isolate;
-static v8::Platform* default_platform;
-
+v8::Platform* default_platform;
+ArrayBufferAllocator* node_array_buffer_allocator;
 
 static void PrintErrorString(const char* format, ...) {
   va_list ap;
@@ -4025,6 +4026,8 @@ static void StartNodeInstance(void* arg) {
   Isolate::CreateParams params;
   ArrayBufferAllocator* array_buffer_allocator = new ArrayBufferAllocator();
   params.array_buffer_allocator = array_buffer_allocator;
+
+  node_array_buffer_allocator = array_buffer_allocator;
   Isolate* isolate = Isolate::New(params);
   if (track_heap_objects) {
     isolate->GetHeapProfiler()->StartTrackingHeapObjects(true);
@@ -4078,6 +4081,8 @@ static void StartNodeInstance(void* arg) {
         }
       } while (more == true);
     }
+
+    Worker::CleanupWorkers();
 
     env->set_trace_sync_io(false);
 
@@ -4143,6 +4148,7 @@ int Start(int argc, char** argv) {
     StartNodeInstance(&instance_data);
     exit_code = instance_data.exit_code();
   }
+
   V8::Dispose();
 
   delete default_platform;

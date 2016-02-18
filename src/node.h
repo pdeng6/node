@@ -179,12 +179,15 @@ typedef intptr_t ssize_t;
 namespace node {
 
 NODE_EXTERN extern bool no_deprecation;
+NODE_EXTERN extern v8::Platform* default_platform;
 
 NODE_EXTERN int Start(int argc, char *argv[]);
 NODE_EXTERN void Init(int* argc,
                       const char** argv,
                       int* exec_argc,
                       const char*** exec_argv);
+
+extern ArrayBufferAllocator* node_array_buffer_allocator;
 
 class Environment;
 

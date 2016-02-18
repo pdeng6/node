@@ -30,6 +30,7 @@
     startup.globalVariables();
     startup.globalTimeouts();
     startup.globalConsole();
+    startup.globalWorker();
 
     startup.processAssert();
     startup.processConfig();
@@ -212,6 +213,9 @@
     });
   };
 
+  startup.globalWorker = function() {
+      NativeModule.require('worker');
+  };
 
   startup._lazyConstants = null;
 

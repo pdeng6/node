@@ -195,8 +195,6 @@ DEFINE_BOOL(legacy_const, true, "legacy semantics for const in sloppy mode")
   V(harmony_reflect, "harmony Reflect API")                           \
   V(harmony_destructuring, "harmony destructuring")                   \
   V(harmony_default_parameters, "harmony default parameters")         \
-  V(harmony_sharedarraybuffer, "harmony sharedarraybuffer")           \
-  V(harmony_atomics, "harmony atomics")                               \
   V(harmony_simd, "harmony simd")
 
 // Features that are complete (but still behind --harmony/es-staging flag).
@@ -210,8 +208,10 @@ DEFINE_BOOL(legacy_const, true, "legacy semantics for const in sloppy mode")
 // Features that are shipping (turned on by default, but internal flag remains).
 #define HARMONY_SHIPPING(V)                                    \
   V(harmony_arrow_functions, "harmony arrow functions")        \
+  V(harmony_atomics, "harmony atomics")                               \
   V(harmony_new_target, "harmony new.target")                  \
   V(harmony_object_observe, "harmony Object.observe")          \
+  V(harmony_sharedarraybuffer, "harmony sharedarraybuffer")    \
   V(harmony_spreadcalls, "harmony spread-calls")               \
   V(harmony_spread_arrays, "harmony spread in array literals") \
   V(harmony_object, "harmony Object methods")

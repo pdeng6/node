@@ -63,6 +63,7 @@ namespace node {
   V(compare_string, "compare")                                                \
   V(ctime_string, "ctime")                                                    \
   V(cwd_string, "cwd")                                                        \
+  V(data_string, "data")                                                      \
   V(debug_port_string, "debugPort")                                           \
   V(debug_string, "debug")                                                    \
   V(dest_string, "dest")                                                      \
@@ -258,6 +259,7 @@ namespace node {
   V(tls_wrap_constructor_template, v8::FunctionTemplate)                      \
   V(tty_constructor_template, v8::FunctionTemplate)                           \
   V(udp_constructor_function, v8::Function)                                   \
+  V(worker_constructor_template, v8::FunctionTemplate)                           \
   V(write_wrap_constructor_function, v8::Function)                            \
 
 class Environment;
